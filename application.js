@@ -39,7 +39,7 @@
 
     function onFsSuccess(fileSystem) {
         gFileSystem = fileSystem;
-        console.log("Got the file system: "+ fileSystem.name +  "root entry name is " + fileSystem.root.name );
+        console.log("Got the file system: " + fileSystem.name + " root entry name is " + fileSystem.root.name);
     }
 
     function onFsFailure(err) {
@@ -235,7 +235,7 @@
                     filename = uri.slice(uri.lastIndexOf('/') + 1);
                     console.log("opening file " + filename);
                     //  if (!openFile(filename)) {
-                    downloadFile(uri, filename, function (filename) { console.log("file " + filename + " downloaded and saved"); openFile(filename) });
+                    downloadFilePhoneGap(uri, filename, function (filename) { console.log("file " + filename + " downloaded and saved"); openFile(filename) });
                     //  }
                 });
 
@@ -259,7 +259,7 @@
     function openFile(dest) {
         listFiles();
         var result = new Boolean(false);
-        gFileSystem.root.getFile(dest, {create:false}, function (fileEntry) {
+        gFileSystem.root.getFile(dest, { create: false }, function (fileEntry) {
             fileEntry.file(function (file) {
                 console.log("file foind!!!!");
 
@@ -274,6 +274,17 @@
 
     function errHandler() {
         gResult = false;
+    }
+
+    function downloadFilePhoneGap(uri, filename, onSavedCallback) {
+        var fileTransfer = new FileTransfer();
+        fileTransfer.download(
+        uri,
+        filename,
+        function (file) {
+            alert("download file " + file.fullPath);
+        },
+        errHandler);
     }
 
     function downloadFile(uri, filename, onSavedCallback) {
@@ -330,4 +341,4 @@
         });
     }
 
-})(jQuery /*, Ext*/);                                                                   // Anonymous namespace end, uncomment Ext argument to use SenchaTouch in your app
+})(jQuery /*, Ext*/);                                                                      // Anonymous namespace end, uncomment Ext argument to use SenchaTouch in your app
