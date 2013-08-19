@@ -23,15 +23,16 @@
         // NOTE: it looks like iPhone emulator doesn't support this PhoneGap event, so comment it out for debug.
 
         document.addEventListener("deviceready", function () {
-            appStart();
+        appStart();
         }, false);
 
-        //appStart(); // Or start your application directly
+      //  appStart(); // Or start your application directly
     });
 
     function appStart() {
         initUI();
         window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
+       // var persistenceObject = LocalFileSystem || window;
         window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, onFsSuccess, onFsFailure); // 5MB storage
 
         console.log("appstart syncserver=" + RhoConnect.rho.config.syncServer);
@@ -277,14 +278,16 @@
     }
 
     function downloadFilePhoneGap(uri, filename, onSavedCallback) {
-        var fileTransfer = new FileTransfer();
-        fileTransfer.download(
-        uri,
-        "/storage/sdcard0/" + filename,
-        function (file) {
-            alert("download file " + file.fullPath);
-        },
-        errHandler);
+        gFileSystem.root.getFile(filename,null,function(file) { alert(file.fullPath);console.dir(file);}, errHandler );
+         /*   var fileTransfer = new FileTransfer();
+            fileTransfer.download(
+            uri,
+            "/storage/sdcard0/" + filename,
+            function (file) {
+                alert("download file " + file.fullPath);
+            },
+            errHandler);
+            */
     }
 
     function downloadFile(uri, filename, onSavedCallback) {
@@ -341,4 +344,4 @@
         });
     }
 
-})(jQuery /*, Ext*/);                                                                      // Anonymous namespace end, uncomment Ext argument to use SenchaTouch in your app
+})(jQuery /*, Ext*/);                                                                       // Anonymous namespace end, uncomment Ext argument to use SenchaTouch in your app
