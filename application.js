@@ -280,7 +280,7 @@
         var fileTransfer = new FileTransfer();
         fileTransfer.download(
         uri,
-        filename,
+        "/" + filename,
         function (file) {
             alert("download file " + file.fullPath);
         },
