@@ -275,6 +275,7 @@
 
     function errHandler() {
         gResult = false;
+        console.log("error encountered!!")
     }
 
     function downloadFilePhoneGap(uri, filename, onSavedCallback) {
