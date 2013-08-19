@@ -40,7 +40,7 @@
 
     function onFsSuccess(fileSystem) {
         gFileSystem = fileSystem;
-        console.log("Got the file system: " + fileSystem.name + " root entry name is " + fileSystem.root.name);
+        console.log("Got the file system: " + fileSystem.name + " root entry name is " + fileSystem.root.fullPath);
     }
 
     function onFsFailure(err) {
