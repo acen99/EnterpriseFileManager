@@ -14,24 +14,35 @@
 
 (function ($ /*, Ext*/) { // Anonymous namespace begin, uncomment Ext argument to use SenchaTouch in your app
 
-    var showPageId = null;
+    var gFileSystem = null;
 
     // Application initialization using jQuery once application is loaded COMPLETELY
     $(window).bind('load', function () {
 
         // Use this pattern to start application with PhoneGap
         // NOTE: it looks like iPhone emulator doesn't support this PhoneGap event, so comment it out for debug.
-        
-        document.addEventListener("deviceready", function(){
+
+        /*     document.addEventListener("deviceready", function () {
         appStart();
         }, false);
-        
-        //appStart(); // Or start your application directly
+        */
+        appStart(); // Or start your application directly
     });
 
     function appStart() {
         initUI();
+        window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
+        window.requestFileSystem(window.PERSISTENT, 5 * 1024 * 1024, onFsSuccess, onFsFailure); // 5MB storage
+
         console.log("appstart syncserver=" + RhoConnect.rho.config.syncServer);
+    }
+
+    function onFsSuccess(fileSystem) {
+        gFileSystem = fileSystem;
+    }
+
+    function onFsFailure(err) {
+        alert("Local storage failed with error: " + err);
     }
 
     function initUI() {
@@ -202,6 +213,31 @@
                 html += "<li><div class='itemLabel'>Modified Date</div><div class='itemValue'>" + $(this).attr('modifieddate') + "</div></li>"
                 filedetail.append(html);
                 filedetail.listview('refresh');
+
+                $("#open_icon").attr("remote_file_uri", $(this).attr('remotefileuri'));
+
+
+                $("#open_icon").live("tap", function () {
+                    uri = $(this).attr("remote_file_uri");
+                    filename = uri.slice(uri.lastIndexOf('/') + 1);
+                    console.log("opening file " + filename);
+                    openFile(filename);
+                    //  if (!openFile(filename)) {
+                    //      downloadFile(uri, filename, function (filename) { console.log("file " + filename + " downloaded and saved"); openFile(filename) });
+                    //  }
+                });
+
+                // test
+                $("#download_icon").attr("remote_file_uri", $(this).attr('remotefileuri'));
+                $("#download_icon").live("tap", function () {
+                    uri = $(this).attr("remote_file_uri");
+                    filename = uri.slice(uri.lastIndexOf('/') + 1);
+                    console.log("opening file " + filename);
+                    //  if (!openFile(filename)) {
+                    downloadFile(uri, filename, function (filename) { console.log("file " + filename + " downloaded and saved"); openFile(filename) });
+                    //  }
+                });
+
             });
 
             displaylist.listview('refresh');
@@ -210,6 +246,68 @@
         }
 
     }
+
+    function listFiles() {
+        var dirReader = gFileSystem.root.createReader();
+        dirReader.readEntries(function (entries) {
+            console.dir(entries);
+
+        }, errHandler);
+    }
+    var gResult;
+    function openFile(dest) {
+        listFiles();
+        var result = new Boolean(false);
+        gFileSystem.root.getFile(dest, {}, function (fileEntry) {
+            fileEntry.file(function (file) {
+                console.log("file foind!!!!");
+
+                alert("file found!!");
+                // openFile_result = true;
+            }, errHandler)
+        }, /*function () { result = false; }*/errHandler);
+
+        alert("openFile result= " + result);
+        return result.valueOf;
+    }
+
+    function errHandler() {
+        gResult = false;
+    }
+
+    function downloadFile(uri, filename, onSavedCallback) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', uri, true);
+        xhr.responseType = "arraybuffer";
+        xhr.onload = function () {
+            alert("downloaded: " + filename);
+            if (xhr.readyState == 4) {
+                if (saveFile(xhr.response, filename) && onSavedCallback != undefined) {
+                    onSavedCallback(filename);
+                }
+            }
+        };
+
+        xhr.send(null);
+    }
+
+    function saveFile(response, filename) {
+        var result = false;
+        gFileSystem.root.getFile(filename, { create: true },
+        function (fileEntry) {
+            fileEntry.createWriter(function (writer) {  // FileWriter 
+                //    writer.onprogress = updateStatus; // Again, this is optional 
+                writer.onwrite = function (e) { console.log("write " + filename + " is successful!"); listFiles(); result = true; };  // Success callback function 
+                writer.onerror = function (e) { alert("write " + filename + " failed") };  // Error callback function 
+                console.log("write");
+                var blob = new Blob([response]);
+                writer.write(blob); // The actual writing 
+            }, function () { alert("create writer failed!!!"); });
+        });
+
+        return result;
+    }
+
 
     function rhoConnectIsReadyToUse() {
         console.log("Rhoconnect is ready");
@@ -231,4 +329,4 @@
         });
     }
 
-})(jQuery /*, Ext*/);                                   // Anonymous namespace end, uncomment Ext argument to use SenchaTouch in your app
+})(jQuery /*, Ext*/);                                                                  // Anonymous namespace end, uncomment Ext argument to use SenchaTouch in your app

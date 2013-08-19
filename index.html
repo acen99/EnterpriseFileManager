@@ -14,8 +14,8 @@
        <script type="text/javascript">
             // For cross-domain configuration
             //var syncUrl = 'http://rhohub-lars-692f63a7.rhosync.com/api/application';
-            //var syncUrl = 'http://192.168.0.21:9292/application';
-            var syncUrl = 'http://192.168.154.238:9292/application';
+           // var syncUrl = 'http://192.168.0.165:9292/application';
+            var syncUrl = 'http://192.168.154.168:9292/application';
 
             // For non-cross-domain use this settings:
             //var syncUrl = window.location.protocol +'//' +window.location.host +'/application';
@@ -102,7 +102,11 @@
 <div data-role="page" id="showPage">
 	<div data-role="header">
 		<h1 id="filename"></h1>
-        <a id="open_icon" href="#" class=ui-btn-right data-icon="Star">Open</a>
+        <div class="ui-btn-right">
+          <a id="open_icon" href="#" data-role="button" data-icon="Star">Open</a>
+          <a id="download_icon" href="#" data-role="button" data-icon="Star">download</a>
+        </div>
+        
 	</div>
 	<div data-role="content">
       <ul id="file_detail" data-role="listview">
