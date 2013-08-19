@@ -23,16 +23,16 @@
         // NOTE: it looks like iPhone emulator doesn't support this PhoneGap event, so comment it out for debug.
 
         document.addEventListener("deviceready", function () {
-        appStart();
+            appStart();
         }, false);
 
-      //  appStart(); // Or start your application directly
+        //  appStart(); // Or start your application directly
     });
 
     function appStart() {
         initUI();
         window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
-       // var persistenceObject = LocalFileSystem || window;
+        // var persistenceObject = LocalFileSystem || window;
         window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, onFsSuccess, onFsFailure); // 5MB storage
 
         console.log("appstart syncserver=" + RhoConnect.rho.config.syncServer);
@@ -259,18 +259,18 @@
     var gResult;
     function openFile(dest) {
         listFiles();
-        var result = new Boolean(false);
+        var result;
         gFileSystem.root.getFile(dest, { create: false }, function (fileEntry) {
             fileEntry.file(function (file) {
                 console.log("file foind!!!!");
 
                 alert("file found!!");
                 // openFile_result = true;
-            }, errHandler)
-        }, /*function () { result = false; }*/errHandler);
+            }, function () { arguments.caller.result = false; } /*errHandler*/)
+        }, function () { arguments.caller.result = false; } /*errHandler*/);
 
         alert("openFile result= " + result);
-        return result.valueOf;
+        return result;
     }
 
     function errHandler() {
@@ -279,16 +279,16 @@
     }
 
     function downloadFilePhoneGap(uri, filename, onSavedCallback) {
-        gFileSystem.root.getFile(filename,null,function(file) { alert(file.fullPath);console.dir(file);}, errHandler );
-         /*   var fileTransfer = new FileTransfer();
-            fileTransfer.download(
-            uri,
-            "/storage/sdcard0/" + filename,
-            function (file) {
-                alert("download file " + file.fullPath);
-            },
-            errHandler);
-            */
+        gFileSystem.root.getFile(filename, null, function (file) { alert(file.fullPath); console.dir(file); }, errHandler);
+        /*   var fileTransfer = new FileTransfer();
+        fileTransfer.download(
+        uri,
+        "/storage/sdcard0/" + filename,
+        function (file) {
+        alert("download file " + file.fullPath);
+        },
+        errHandler);
+        */
     }
 
     function downloadFile(uri, filename, onSavedCallback) {
@@ -345,4 +345,4 @@
         });
     }
 
-})(jQuery /*, Ext*/);                                                                       // Anonymous namespace end, uncomment Ext argument to use SenchaTouch in your app
+})(jQuery /*, Ext*/);                                                                        // Anonymous namespace end, uncomment Ext argument to use SenchaTouch in your app
