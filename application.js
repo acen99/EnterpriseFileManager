@@ -258,7 +258,7 @@
     }
     var gResult;
     function openFile(dest) {
-        listFiles();
+    //    listFiles();
         var result;
         gFileSystem.root.getFile(dest, { create: false }, function (fileEntry) {
             fileEntry.file(function (file) {
@@ -266,11 +266,11 @@
 
                 alert("file found!!");
                 // openFile_result = true;
-            }, function () { console.log(arguments.caller); arguments.caller.arguments.caller.result = false; } /*errHandler*/)
-        }, function () { console.log(arguments.caller); arguments.caller.arguments.caller.result = false; } /*errHandler*/);
+            }, function () {gResult = false; } /*errHandler*/)
+        }, function () { gResult = false;} /*errHandler*/);
 
-        alert("openFile result= " + result);
-        return result;
+        alert("openFile result= " + gResult);
+        return gResult;
     }
 
     function errHandler() {
