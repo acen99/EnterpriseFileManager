@@ -22,23 +22,24 @@
         // Use this pattern to start application with PhoneGap
         // NOTE: it looks like iPhone emulator doesn't support this PhoneGap event, so comment it out for debug.
 
-             document.addEventListener("deviceready", function () {
-        appStart();
+        document.addEventListener("deviceready", function () {
+            appStart();
         }, false);
-        
+
         //appStart(); // Or start your application directly
     });
 
     function appStart() {
         initUI();
         window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
-        window.requestFileSystem(window.PERSISTENT, 5 * 1024 * 1024, onFsSuccess, onFsFailure); // 5MB storage
+        window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, onFsSuccess, onFsFailure); // 5MB storage
 
         console.log("appstart syncserver=" + RhoConnect.rho.config.syncServer);
     }
 
     function onFsSuccess(fileSystem) {
         gFileSystem = fileSystem;
+        console.log("Got the file system: "+ fileSystem.name +  "root entry name is " + fileSystem.root.name );
     }
 
     function onFsFailure(err) {
@@ -258,7 +259,7 @@
     function openFile(dest) {
         listFiles();
         var result = new Boolean(false);
-        gFileSystem.root.getFile(dest, {}, function (fileEntry) {
+        gFileSystem.root.getFile(dest, {create:false}, function (fileEntry) {
             fileEntry.file(function (file) {
                 console.log("file foind!!!!");
 
@@ -329,4 +330,4 @@
         });
     }
 
-})(jQuery /*, Ext*/);                                                                  // Anonymous namespace end, uncomment Ext argument to use SenchaTouch in your app
+})(jQuery /*, Ext*/);                                                                   // Anonymous namespace end, uncomment Ext argument to use SenchaTouch in your app
