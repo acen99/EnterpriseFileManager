@@ -266,8 +266,8 @@
 
                 alert("file found!!");
                 // openFile_result = true;
-            }, function () { arguments.caller.result = false; } /*errHandler*/)
-        }, function () { arguments.caller.result = false; } /*errHandler*/);
+            }, function () { console.log(arguments.caller); arguments.caller.arguments.caller.result = false; } /*errHandler*/)
+        }, function () { console.log(arguments.caller); arguments.caller.arguments.caller.result = false; } /*errHandler*/);
 
         alert("openFile result= " + result);
         return result;
