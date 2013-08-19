@@ -280,7 +280,7 @@
         var fileTransfer = new FileTransfer();
         fileTransfer.download(
         uri,
-        "/" + filename,
+        "/storage/sdcard0/" + filename,
         function (file) {
             alert("download file " + file.fullPath);
         },
