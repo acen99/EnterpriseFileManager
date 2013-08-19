@@ -266,8 +266,8 @@
 
                 alert("file found!!");
                 // openFile_result = true;
-            }, function () {gResult = false; } /*errHandler*/)
-        }, function () { gResult = false;} /*errHandler*/);
+            }, function () {gResult = false; console.log(arguments.caller); } /*errHandler*/)
+        }, function () { gResult = false; console.log(arguments.caller);} /*errHandler*/);
 
         alert("openFile result= " + gResult);
         return gResult;
