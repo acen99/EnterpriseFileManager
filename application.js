@@ -22,11 +22,11 @@
         // Use this pattern to start application with PhoneGap
         // NOTE: it looks like iPhone emulator doesn't support this PhoneGap event, so comment it out for debug.
 
-        /*     document.addEventListener("deviceready", function () {
+             document.addEventListener("deviceready", function () {
         appStart();
         }, false);
-        */
-        appStart(); // Or start your application directly
+        
+        //appStart(); // Or start your application directly
     });
 
     function appStart() {
