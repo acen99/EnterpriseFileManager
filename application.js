@@ -263,8 +263,8 @@
         window.plugins.webintent.startActivity( { 
             action: window.plugins.webintent.ACTION_VIEW,
             url: file.fullPath},
-            function () { console.log("intent send successfully!!")},
-            function () { alert("webintent failed")},
+            function () { console.log("intent send successfully!!") },
+            function () { alert("webintent failed")}
         );
     }
 
