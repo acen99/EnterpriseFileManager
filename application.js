@@ -15,6 +15,8 @@
 (function ($ /*, Ext*/) { // Anonymous namespace begin, uncomment Ext argument to use SenchaTouch in your app
 
     var gFileSystem = null;
+    var gFileResult;
+    var subdirectory = "/Download"
 
     // Application initialization using jQuery once application is loaded COMPLETELY
     $(window).bind('load', function () {
@@ -235,9 +237,9 @@
                     uri = $(this).attr("remote_file_uri");
                     filename = uri.slice(uri.lastIndexOf('/') + 1);
                     console.log("opening file " + filename);
-                    //  if (!openFile(filename)) {
-                    downloadFilePhoneGap(uri, filename, function (filename) { console.log("file " + filename + " downloaded and saved"); openFile(filename) });
-                    //  }
+                    if (!openFile(filename)) {
+                        downloadFilePhoneGap(uri, filename, openFile);
+                    }
                 });
 
             });
@@ -256,75 +258,97 @@
 
         }, errHandler);
     }
-    var gResult;
-    function openFile(dest) {
-    //    listFiles();
-        var result;
-        gFileSystem.root.getFile(dest, { create: false }, function (fileEntry) {
-            fileEntry.file(function (file) {
-                console.log("file foind!!!!");
 
-                alert("file found!!");
-                // openFile_result = true;
-            }, function () {gResult = false; console.log(arguments.caller); } /*errHandler*/)
-        }, function () { gResult = false; console.log(arguments.caller);} /*errHandler*/);
+    function openFile(file) {
+        window.plugins.webintent.startActivity( { 
+            action: window.plugins.webintent.ACTION_VIEW,
+            url: file.fullPath},
+            function () { console.log("intent send successfully!!")},
+            function () { alert("webintent failed")},
+        );
+    }
+
+    function openFileIfExist(dest) {
+
+        gFileSystem.root.getFile(dest, { create: false }, function (fileEntry) {
+
+            fileEntry.file(function (file) {
+                onFileSuccessHandler();
+                openFile(file);
+                
+            }, onFileErrHandler)
+        }, onFileErrHandler);
 
         alert("openFile result= " + gResult);
         return gResult;
     }
 
-    function errHandler() {
-        gResult = false;
-        console.log("error encountered!!")
+    function onFileSuccessHandler(msg) {
+        console.log("File operation is successful! " + arguments.caller + " " + msg);
+
+        gFileResult = true;
+    }
+
+    function onFileErrHandler(error) {
+        console.log("File operation error encountered!! + " + arguments.caller + " Error message : " + error);
+
+        gFileResult = false;
     }
 
     function downloadFilePhoneGap(uri, filename, onSavedCallback) {
-        gFileSystem.root.getFile(filename, null, function (file) { alert(file.fullPath); console.dir(file); }, errHandler);
-        /*   var fileTransfer = new FileTransfer();
+        // gFileSystem.root.getFile(filename, null, function (file) { alert(file.fullPath); console.dir(file); }, errHandler);
+        var path = gFileSystem.root.fullPath + subdirectory;
+        if (device.platform == "Android") {
+            path = gFileSystem.root.fullPath.substring(7);
+        }
+        console.log("Path prefix: " + path);
+        var fileTransfer = new FileTransfer();
         fileTransfer.download(
         uri,
-        "/storage/sdcard0/" + filename,
+        path + filename,
         function (file) {
-        alert("download file " + file.fullPath);
+            onFileSuccessHandler();
+            console.log("downloaded file: " + file.fullPath);
+            if (onSavedCallback) onSavedCallback(file);
         },
         errHandler);
-        */
+
     }
-
+    /*
     function downloadFile(uri, filename, onSavedCallback) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', uri, true);
-        xhr.responseType = "arraybuffer";
-        xhr.onload = function () {
-            alert("downloaded: " + filename);
-            if (xhr.readyState == 4) {
-                if (saveFile(xhr.response, filename) && onSavedCallback != undefined) {
-                    onSavedCallback(filename);
-                }
-            }
-        };
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', uri, true);
+    xhr.responseType = "arraybuffer";
+    xhr.onload = function () {
+    alert("downloaded: " + filename);
+    if (xhr.readyState == 4) {
+    if (saveFile(xhr.response, filename) && onSavedCallback != undefined) {
+    onSavedCallback(filename);
+    }
+    }
+    };
 
-        xhr.send(null);
+    xhr.send(null);
     }
 
     function saveFile(response, filename) {
-        var result = false;
-        gFileSystem.root.getFile(filename, { create: true },
-        function (fileEntry) {
-            fileEntry.createWriter(function (writer) {  // FileWriter 
-                //    writer.onprogress = updateStatus; // Again, this is optional 
-                writer.onwrite = function (e) { console.log("write " + filename + " is successful!"); listFiles(); result = true; };  // Success callback function 
-                writer.onerror = function (e) { alert("write " + filename + " failed") };  // Error callback function 
-                console.log("write");
-                var blob = new Blob([response]);
-                writer.write(blob); // The actual writing 
-            }, function () { alert("create writer failed!!!"); });
-        });
+    var result = false;
+    gFileSystem.root.getFile(filename, { create: true },
+    function (fileEntry) {
+    fileEntry.createWriter(function (writer) {  // FileWriter 
+    //    writer.onprogress = updateStatus; // Again, this is optional 
+    writer.onwrite = function (e) { console.log("write " + filename + " is successful!");  result = true; };  // Success callback function 
+    writer.onerror = function (e) { alert("write " + filename + " failed") };  // Error callback function 
+    console.log("write");
+    var blob = new Blob([response]);
+    writer.write(blob); // The actual writing 
+    }, function () { alert("create writer failed!!!"); });
+    });
 
-        return result;
+    return result;
     }
 
-
+    */
     function rhoConnectIsReadyToUse() {
         console.log("Rhoconnect is ready");
         $.mobile.changePage($('#listPage'));
@@ -345,4 +369,4 @@
         });
     }
 
-})(jQuery /*, Ext*/);                                                                        // Anonymous namespace end, uncomment Ext argument to use SenchaTouch in your app
+})(jQuery /*, Ext*/);                                                                                   // Anonymous namespace end, uncomment Ext argument to use SenchaTouch in your app
